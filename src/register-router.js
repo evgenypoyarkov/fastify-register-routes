@@ -1,9 +1,8 @@
 'use strict'
 
-const { pick, isArray } = require('lodash')
+const pick = require('lodash/fp/pick')
+const castArray = require('lodash/castArray')
 const wrapMiddleware = require('./wrap-middleware')
-
-const toArray = value => isArray(value) ? value : [value]
 
 /**
  * @method applyWrap
@@ -24,7 +23,7 @@ const applyWrap = handlers => {
  */
 const getHandlers = route => {
   const { useWrap } = route
-  let handlers = toArray(route.handler)
+  let handlers = castArray(route.handler)
 
   if (useWrap) {
     handlers = applyWrap(handlers)
@@ -33,16 +32,23 @@ const getHandlers = route => {
   return handlers
 }
 
+const pickRouteOptions = pick([
+  'name',
+  'version',
+  'service',
+  'schema'
+])
+
 /**
  * @method registerRoute
  * @param  {Instance}       server instance
  * @param  {Object}         route  object
  */
 const registerRoutes = (server, route) => {
-  const { method, path } = route
-  const opts = pick(route, ['name', 'version', 'service', 'schema'])
+  const path = route.url || route.path
+  const opts = pickRouteOptions(route)
   const handlers = getHandlers(route)
-  const lowercasedMethod = method.toLowerCase()
+  const lowercasedMethod = route.method.toLowerCase()
 
   server[lowercasedMethod](path, opts, ...handlers)
 }

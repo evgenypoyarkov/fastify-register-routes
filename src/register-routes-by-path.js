@@ -1,10 +1,16 @@
 'use strict'
 
+const pick = require('lodash/fp/pick')
 const loadRoutesByPath = require('./load-files')
 const registerRoutes = require('./register-router')
 const displayRoutes = require('./display-routes')
 const registerService = require('./register-service')
-const { pick } = require('lodash')
+
+const pickPluginOptions = pick([
+  'path',
+  'showTable',
+  'useService'
+])
 
 /**
  * @method registerRouter
@@ -13,7 +19,7 @@ const { pick } = require('lodash')
  * @param  {Function}    next
  */
 function registerRouter (server, options, next) {
-  const opts = pick(options, ['path', 'showTable', 'useService'])
+  const opts = pickPluginOptions(options)
   const dirname = opts.path
   const showTable = opts.showTable || false
   const useService = opts.useService || false
