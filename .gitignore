@@ -61,3 +61,5 @@ typings/
 # mac os files
 .DS_Store
 
+# IDEs settings
+.idea/
